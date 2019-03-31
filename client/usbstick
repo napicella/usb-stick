@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+program_name="usb-stick"
+my_dir="$(dirname "$0")"
+api_url="API_URL"
+
+sub_help(){
+    echo "Usage: $program_name <subcommand> [options]"
+    echo "Subcommands:"
+    echo "    store     store to a cloud usb stick"
+    echo "    download  download from a cloud stick"
+    echo ""
+    echo "For help with each subcommand run:"
+    echo "$program_name <subcommand> -h|--help"
+    echo ""
+}
+
+function sub_store() {
+    source "$my_dir/store_args.sh"
+
+    etag=$(< /dev/urandom tr -dc A-Z-a-z-0-9 | head -c${1:-32};echo;)
+
+    if [ -f $dir ]
+    then
+        zip -j -P "$password" "/tmp/$etag.zip" "$dir"
+    else
+        cd "$dir"
+        zip -P "$password" -r "/tmp/$etag.zip" *
+    fi
+
+    api_response=$(curl -X PUT "$api_url$etag" -I)
+    s3_upload_url=$(echo "$api_response" | grep -Fi Location | sed 's/Location: //g' | sed -e 's/[[:space:]]*$//' );
+    curl --upload-file "/tmp/$etag.zip" "$s3_upload_url";
+    printf "Use this etag to download the file: \n\n$etag\n"
+}
+
+function sub_download() {
+    source "$my_dir/download_args.sh"
+
+    cd "$dir"
+    curl -L "$api_url$etag" --output "./$etag.zip"
+    unzip "$etag.zip" -d "$etag"
+}
+
+subcommand=$1
+case $subcommand in
+    "" | "-h" | "--help")
+        sub_help
+        ;;
+    *)
+        shift
+        sub_${subcommand} $@
+        if [ $? = 127 ]; then
+            echo "Error: '$subcommand' is not a known subcommand." >&2
+            echo "       Run '$program_name --help' for a list of known subcommands." >&2
+            exit 1
+        fi
+        ;;
+esac
+
+exit

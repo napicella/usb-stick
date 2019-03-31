@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+# Parameters are CloudFormation features to pass input
+# to your template when you create a stack
+Parameters:
+  BucketName:
+    Type: String
+    Description: The bucket used to store usb stick files
+  StageName:
+    Type: String
+    Default: Prod
+    Description: The Lambda Function and API Gateway Stage
+
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  LambdaFunctionOverHttps:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: ../src/
+      Environment:
+        Variables:
+          bucket: !Ref BucketName
+      Policies:
+        - AmazonS3FullAccess
+      Events:
+        AnyRequest:
+          Type: Api
+          Properties:
+            Path: /*
+            Method: ANY
+            RestApiId:
+              Ref: UsbStickApiUrl
+
+  UsbStickApiUrl:
+      Type: AWS::Serverless::Api
+      Properties:
+        StageName: Prod
+        DefinitionBody:
+          swagger: 2.0
+          info:
+            title: 'PresignedUrl-Prod'
+          paths:
+            "/{proxy+}":
+              x-amazon-apigateway-any-method:
+                produces:
+                  - application/json
+                x-amazon-apigateway-integration:
+                  uri:
+                    !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionOverHttps.Arn}/invocations"
+                  passthroughBehavior: when_no_match
+                  httpMethod: POST
+                  type: aws_proxy
+
+  UsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      Throttle:
+        BurstLimit: 5
+        RateLimit: 2
+      Description: String
+      UsagePlanName: TrialUsagePlan
+
+Outputs:
+  UsbStickApiUrl:
+    Value: !Sub "https://${UsbStickApiUrl}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
+    Export:
+      Name: UsbStickApiUrl
+
