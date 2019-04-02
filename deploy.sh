@@ -46,12 +46,6 @@ function deploy_create_cfn_stack() {
 
     aws cloudformation wait stack-create-complete --stack-name "$stack_name"
 
-#    # get API endpoint
-#    API_ENDPOINT=$(aws cloudformation describe-stacks --stack-name $stack_name --query 'Stacks[0].Outputs[0].OutputValue')
-#
-#    # remove quotes
-#    API_ENDPOINT=$(sed -e 's/^"//' -e 's/"$//' <<< $API_ENDPOINT)
-
     apigwurl=$(aws cloudformation list-exports --query "Exports[?Name==\`UsbStickApiUrl\`].Value" --no-paginate --output text)
 }
 

@@ -12,6 +12,7 @@ Parameters:
     Description: The Lambda Function and API Gateway Stage
 
 Transform: AWS::Serverless-2016-10-31
+
 Resources:
   LambdaFunctionOverHttps:
     Type: AWS::Serverless::Function
@@ -36,10 +37,16 @@ Resources:
   UsbStickApiUrl:
       Type: AWS::Serverless::Api
       Properties:
+        MethodSettings:
+          - ResourcePath: /*
+            HttpMethod: '*'
+            ThrottlingBurstLimit: 10
+            ThrottlingRateLimit: 1
         StageName: Prod
         DefinitionBody:
           swagger: 2.0
           info:
+            ## This is the value assigned as ApiName by SAM
             title: 'PresignedUrl-Prod'
           paths:
             "/{proxy+}":
@@ -55,16 +62,30 @@ Resources:
 
   UsagePlan:
     Type: AWS::ApiGateway::UsagePlan
+    DependsOn: UsbStickApiUrl
     Properties:
+      ApiStages:
+      - ApiId:
+          Ref: UsbStickApiUrl
+        Stage: 'Prod'
+      Description: String
+      UsagePlanName: TrialUsagePlan2
+      Quota:
+        Limit: 5000
+        Period: MONTH
       Throttle:
         BurstLimit: 5
-        RateLimit: 2
-      Description: String
-      UsagePlanName: TrialUsagePlan
+        RateLimit: 1
 
 Outputs:
   UsbStickApiUrl:
+    Description: 'The Api Gateway Url'
     Value: !Sub "https://${UsbStickApiUrl}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
     Export:
       Name: UsbStickApiUrl
+  UsbStickApi:
+    Description: 'The ApiName'
+    Value: 'PresignedUrl-Prod'
+    Export:
+      Name: UsbStickApi
 
