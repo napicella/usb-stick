@@ -24,6 +24,9 @@ Parameters:
   ApiGatewayApiName:
     Type: String
     Description: Exported key for the Api Gateway ApiName to use as metric source for the alarm(s)
+  Email:
+    Type: String
+    Description: Email to notify when alarm triggers
 
 Resources:
   LambdaErrorAlarm:
@@ -50,7 +53,7 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       Subscription:
-      - Endpoint: "someemail@gmail.com"
+      - Endpoint: !Sub "${Email}"
         Protocol: email
 
   DdosBlocker:

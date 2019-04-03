@@ -40,8 +40,8 @@ Resources:
         MethodSettings:
           - ResourcePath: /*
             HttpMethod: '*'
-            ThrottlingBurstLimit: 10
-            ThrottlingRateLimit: 1
+            ThrottlingBurstLimit: 1
+            ThrottlingRateLimit: 10
         StageName: Prod
         DefinitionBody:
           swagger: 2.0
