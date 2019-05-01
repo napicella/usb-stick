@@ -14,12 +14,18 @@ Parameters:
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
+
+  UploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
   LambdaFunctionOverHttps:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
       Runtime: nodejs8.10
-      CodeUri: ../src/
+      CodeUri: ../usb-stick-lambda-service/
       Environment:
         Variables:
           bucket: !Ref BucketName
@@ -47,7 +53,7 @@ Resources:
           swagger: 2.0
           info:
             ## This is the value assigned as ApiName by SAM
-            title: 'PresignedUrl-Prod'
+            title: !Sub 'UsbStickApiUrl-${StageName}'
           paths:
             "/{proxy+}":
               x-amazon-apigateway-any-method:
@@ -68,7 +74,23 @@ Outputs:
       Name: UsbStickApiUrl
   UsbStickApi:
     Description: 'The ApiName'
-    Value: 'PresignedUrl-Prod'
+    Value: !Sub "UsbStickApiUrl-${StageName}"
     Export:
       Name: UsbStickApi
+  UsbStickApiId:
+    Description: 'The Api Id'
+    Value: !Ref UsbStickApiUrl
+    Export:
+      Name: UsbStickApiId
+  UploadBucketName:
+    Description: 'Convenience export of the bucket name which is going to hold the uploads'
+    Value: !Sub "${BucketName}"
+    Export:
+      Name: UploadBucketName
+  StageName:
+    Description: 'Convenience export of the stage name for Api Gateway'
+    Value: !Sub "${StageName}"
+    Export:
+      Name: StageName
+
 

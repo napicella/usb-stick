@@ -5,7 +5,10 @@ Transform: 'AWS::Serverless-2016-10-31'
 ## https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html
 ## Syntax of import: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html
 
-## This templates creates alarm(s) for an existing ApiGateway which exported the Api Name.
+## S3 sends to CloudWatch daily Storage metrics by default. For more information see:
+## https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html
+
+## This templates creates alarm(s) for an existing ApiGateway which exported the Api Name and an S3 Bucket.
 ## This templates receives an exported key, which is the ApiName of an existing Cfn Stack.
 ## For example if the template which creates the Api Gateway exports the Api Name like this:
 ##
@@ -24,15 +27,24 @@ Parameters:
   ApiGatewayApiName:
     Type: String
     Description: Exported key for the Api Gateway ApiName to use as metric source for the alarm(s)
+  ApiGatewayId:
+    Type: String
+    Description: Exported key for the Api Gateway id
+  ApiGatewayStage:
+     Type: String
+     Description: Exported key for the Api Gateway stage
+  S3DataBucketName:
+    Type: String
+    Description: Exported key for the bucket name to use as metric source for the alarm(s)
   Email:
     Type: String
     Description: Email to notify when alarm triggers
 
 Resources:
-  LambdaErrorAlarm:
+  ApiGatewayTooManyRequestAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
-      AlarmDescription: 'API Gateway calls'
+      AlarmDescription: 'API Gateway too many calls'
       Namespace: 'AWS/ApiGateway'
       MetricName: Count
       Dimensions:
@@ -42,6 +54,24 @@ Resources:
             !Sub "${ApiGatewayApiName}"
       Statistic: Sum
       Period: 60
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - Ref: "AlarmNotificationTopic"
+      TreatMissingData: notBreaching
+
+  S3BucketTooMuchDataAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'S3 data bucket too much data'
+      Namespace: 'AWS/S3'
+      MetricName: BucketSizeBytes
+      Dimensions:
+      - Name: BucketName
+        Value: !Sub "${S3DataBucketName}"
+      Statistic: Average
+      Period: 86400
       EvaluationPeriods: 1
       Threshold: 1
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -59,8 +89,14 @@ Resources:
   DdosBlocker:
     Type: 'AWS::Serverless::Application'
     Properties:
-      Location: ../ddos-blocker/template.yaml
+      Location: ../kill-switch/template.yaml
       Parameters:
         TooManyRequestAlarmTopic: !Sub "${AlarmNotificationTopic}"
+        ApiGatewayId:
+          Fn::ImportValue:
+            !Sub "${ApiGatewayId}"
+        ApiGatewayStage:
+          Fn::ImportValue:
+            !Sub "${ApiGatewayStage}"
 
 

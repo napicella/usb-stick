@@ -34,7 +34,7 @@ function create_bucket() {
     exit -1
 }
 
-function deploy_create_cfn_stack() {
+function deploy_service_cfn_stack() {
     if ! aws cloudformation describe-stacks --stack-name "$stack_name" ; then
         wait_condition="stack-create-complete"
     else
@@ -63,11 +63,7 @@ fi
 
 create_bucket "$clientBucket" "$fail_if_exists"
 create_bucket "$serviceBucket" "$fail_if_exists"
-create_bucket "$dataBucket" "$fail_if_exists"
 
-deploy_create_cfn_stack
-
-
+deploy_service_cfn_stack
 printf "Url of the service: \n$apigwurl \n"
-
 "$my_dir"/build_client.sh -b "$clientBucket" -u "$apigwurl"

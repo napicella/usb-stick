@@ -110,3 +110,20 @@ wget "http://$client_b.s3.amazonaws.com/usb-stick.zip" -O /tmp/usb-stick.zip; \
 
 You can install the clients on how many machines as you want.   
 Just remember the bucket to which you stored the client code :)
+
+## Deploy alarms (optional but recommended)
+Create an alarm which is triggered when too many requests are made too the api gw or the bucket which holds
+the uploads grows too much in size.  
+
+Set some variables for convenience  
+
+```bash
+code_b=fourth.bucket.here
+email=some-email@some-domain.com
+```
+
+Then run:
+
+```bash
+./deploy_alarms.sh --codeBucket "${code_b}" --email "${email}"
+```

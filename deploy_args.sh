@@ -77,7 +77,7 @@ then
     help;
 fi
 
-if [ -z "clientBucket" ]
+if [ -z "$clientBucket" ]
 then
     echo "client-bucket is required";
     help;
