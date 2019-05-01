@@ -4,7 +4,7 @@ set -e
 
 program_name="usb-stick"
 my_dir="$(dirname "$0")"
-api_url="API_URL"
+api_url="https://lxb504sui2.execute-api.eu-west-1.amazonaws.com/Prod/"
 
 sub_help(){
     echo "Usage: $program_name <subcommand> [options]"
@@ -20,20 +20,21 @@ sub_help(){
 function sub_store() {
     source "$my_dir/store_args.sh"
 
-    etag=$(< /dev/urandom tr -dc A-Z-a-z-0-9 | head -c${1:-32};echo;)
+    etag=$(head -c32 <(tr -dc 'A-Z-a-z-0-9' < /dev/urandom 2>/dev/null))
 
-    if [ -f $dir ]
+    if [[ -f "${dir}" ]]
     then
-        zip -j -P "$password" "/tmp/$etag.zip" "$dir"
+        zip -qq -j -P "$password" "/tmp/$etag.zip" "$dir"
     else
         cd "$dir"
-        zip -P "$password" -r "/tmp/$etag.zip" *
+        zip -qq -P "$password" -r "/tmp/$etag.zip" *
     fi
 
-    api_response=$(curl -X PUT "$api_url$etag" -I)
+    api_response=$(curl -s -X PUT "$api_url$etag" -I)
     s3_upload_url=$(echo "$api_response" | grep -Fi Location | sed 's/Location: //g' | sed -e 's/[[:space:]]*$//' );
-    curl --upload-file "/tmp/$etag.zip" "$s3_upload_url";
-    printf "Use this etag to download the file: \n\n$etag\n"
+    curl -s --upload-file "/tmp/$etag.zip" "$s3_upload_url";
+    printf "Use this etag to download the file: \n$etag\n"
+    printf "Example: \nusbstick download -e $etag -d /tmp \n"
 }
 
 function sub_download() {
@@ -41,7 +42,8 @@ function sub_download() {
 
     cd "$dir"
     curl -L "$api_url$etag" --output "./$etag.zip"
-    unzip "$etag.zip" -d "$etag"
+    unzip -qq "$etag.zip" -d "$etag"
+    printf "\nYour files have been downloaded in $dir/$etag \n"
 }
 
 subcommand=$1
