@@ -2,7 +2,7 @@
 
 set -e
 
-stack_name="usbstick-presigned-url"
+stack_name="usbstick"
 my_dir="$(dirname "$0")"
 source "$my_dir/deploy_args.sh"
 
@@ -35,6 +35,12 @@ function create_bucket() {
 }
 
 function deploy_create_cfn_stack() {
+    if ! aws cloudformation describe-stacks --stack-name "$stack_name" ; then
+        wait_condition="stack-create-complete"
+    else
+        wait_condition="stack-update-complete"
+    fi
+
     sam package --template-file ./cloudformation/template.yaml \
         --s3-bucket "$serviceBucket"  \
         --output-template /tmp/out.yaml
@@ -42,9 +48,10 @@ function deploy_create_cfn_stack() {
     sam deploy --debug --template-file /tmp/out.yaml \
         --stack-name "$stack_name" \
         --parameter-overrides BucketName="$dataBucket" \
-        --capabilities CAPABILITY_IAM
+        --capabilities CAPABILITY_IAM \
+        --no-fail-on-empty-changeset
 
-    aws cloudformation wait stack-create-complete --stack-name "$stack_name"
+    aws cloudformation wait "$wait_condition" --stack-name "$stack_name"
 
     apigwurl=$(aws cloudformation list-exports --query "Exports[?Name==\`UsbStickApiUrl\`].Value" --no-paginate --output text)
 }

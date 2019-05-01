@@ -83,3 +83,10 @@ sed -i -e "s~$url~API_URL~" usbstick
 aws s3 cp ../release/usb-stick.zip "s3://$bucket/usb-stick.zip"
 aws s3api put-object-acl --bucket "$bucket" --key usb-stick.zip --acl public-read
 
+cat >../release/installer.sh <<EOL
+#!/bin/bash
+wget "http://${bucket}.s3.amazonaws.com/usb-stick.zip" -O /tmp/usb-stick.zip;
+sudo unzip /tmp/usb-stick.zip -d /usr/bin/;
+rm /tmp/usb-stick.zip
+EOL
+chmod +x ../release/installer.sh

@@ -60,23 +60,6 @@ Resources:
                   httpMethod: POST
                   type: aws_proxy
 
-  UsagePlan:
-    Type: AWS::ApiGateway::UsagePlan
-    DependsOn: UsbStickApiUrl
-    Properties:
-      ApiStages:
-      - ApiId:
-          Ref: UsbStickApiUrl
-        Stage: 'Prod'
-      Description: String
-      UsagePlanName: TrialUsagePlan2
-      Quota:
-        Limit: 5000
-        Period: MONTH
-      Throttle:
-        BurstLimit: 5
-        RateLimit: 1
-
 Outputs:
   UsbStickApiUrl:
     Description: 'The Api Gateway Url'
