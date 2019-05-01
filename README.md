@@ -19,20 +19,15 @@ machine.
 lifecycle policies on the data stored. On the other hand, with UsbStick we can enforce deletion of the data
 after it was download or delete it after one hour from the date of the upload.
 
-# Usage
-You need to follow the __Getting Started__ section to create the service and the client.  
-Assuming that, here it's how you would use it:  
-Install the client on a machine:
+# Try the live demo
 
+#### Install the client
 ```bash
-wget "http://your_code_client_bucket.s3.amazonaws.com/usb-stick.zip" -O /tmp/usb-stick.zip; \
-      sudo unzip /tmp/usb-stick.zip -d /usr/bin/; \
-      rm /tmp/usb-stick.zip
+curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/release/installer.sh | bash
 ```
-This downloads the client from the bucket it was uploaded during the deployment (as per __Getting Started__ section ) and 
-installs the __usbstick__ program under __/usr/bin__
 
-Store a folder
+#### Usage
+Store `some-folder` folder
 ```bash
 usbstick store -d ./some-folder -p some-password-used-to-encrypt-the-zip
 ```
@@ -53,8 +48,9 @@ Download `some folder` in tmp
 usbstick download -e Em5lXDayaslXdrVwjKokETzU-eu26tCr -d /tmp
 ```
 
+Storing and downloading individual files works exactly the same way.
 
-# Getting started
+# Deploy the stack and the client to your account
 
 The guide describes how to deploy the UsbStick Service and Client in your AWS account.
 __Prerequisites__  
