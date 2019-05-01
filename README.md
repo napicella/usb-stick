@@ -84,7 +84,7 @@ During download:
 
 ## Build lambda code
 ```
-cd src && npm install
+cd usb-stick-lambda-service && npm install
 ```
 
 ## Env variables
