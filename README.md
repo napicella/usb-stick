@@ -6,11 +6,11 @@ __Use cases__
 - Copy heapdump, logs, etc. from a prod machine down to your developer machine for deep investigations
 - You use AWS Systems Manager Session Manager to ssh to your instances 
 
-__what about scp ?__  
+__what about scp (secure copy)?__  
 __scp__ requires the source host and destination host to be routable, i.e. the hosts are in the same network or they have a public addressable ip.  
 UsbStick stores the data in AWS S3, which serves as public addressable data buffer for the source and the destination host.
   
-__what about dropbox ?__  
+__what about Dropbox ?__  
 Although you could use dropbox for this task, it comes with some drawbacks:
 - The client is heavy. By comparison the usb-stick client is only few KB and it only requires zip to be installed on the 
 machine.
@@ -22,6 +22,9 @@ after it was download or delete it after one hour from the date of the upload.
 # Try the live demo
 
 #### Install the client
+The client depends on a couple of tools normally preinstalled on linux distributions like __curl__ and __zip__.  
+If you are on Windows, the client won't work.  
+
 ```bash
 curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/release/installer.sh | bash
 ```
