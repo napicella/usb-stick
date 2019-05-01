@@ -4,7 +4,7 @@ set -e
 
 program_name="usb-stick"
 my_dir="$(dirname "$0")"
-api_url="https://lxb504sui2.execute-api.eu-west-1.amazonaws.com/Prod/"
+api_url="API_URL"
 
 sub_help(){
     echo "Usage: $program_name <subcommand> [options]"
