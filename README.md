@@ -3,7 +3,8 @@ Store file and directories in the cloud to transfer it to another machine.
 
 __Use cases__
 - Copy data between two different machines which are in two different not connected VPCs
-- Copy heapdump, logs, etc. from a prod machine down to your developer machine for deep investigations 
+- Copy heapdump, logs, etc. from a prod machine down to your developer machine for deep investigations
+- You use AWS Systems Manager Session Manager to ssh to your instances 
 
 __what about scp ?__  
 __scp__ requires the source host and destination host to be routable, i.e. the hosts are in the same network or they have a public addressable ip.  
