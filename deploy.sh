@@ -41,7 +41,7 @@ function deploy_service_cfn_stack() {
         wait_condition="stack-update-complete"
     fi
 
-    sam package --template-file ./cloudformation/template.yaml \
+    sam package --debug --template-file ./cloudformation/template.yaml \
         --s3-bucket "$serviceBucket"  \
         --output-template /tmp/out.yaml
 
