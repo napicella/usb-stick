@@ -20,18 +20,43 @@ sub_help(){
 function sub_store() {
     source "$my_dir/store_args.sh"
 
+    if [[ ! -f "${dir}" && ! -d "${dir}" ]]
+    then
+        printf "the file or directory specified does not exist:\n"
+        printf "$dir\n"
+        exit -1
+    fi
+
     etag=$(head -c32 <(tr -dc 'A-Z-a-z-0-9' < /dev/urandom 2>/dev/null))
 
-    if [[ -f "${dir}" ]]
+    set +e
+
+    if [[ -d "${dir}" ]]
     then
-        zip -qq -j -P "$password" "/tmp/$etag.zip" "$dir"
-    else
         cd "$dir"
-        zip -qq -P "$password" -r "/tmp/$etag.zip" *
+        zip_output=$(zip -P "$password" -r "/tmp/$etag.zip" *)
+    else
+        zip_output=$(zip -j -P "$password" "/tmp/$etag.zip" "$dir")
+    fi
+
+    if (( $? )); then
+        echo "Failure while zipping the content"
+        echo "$zip_output"
+        exit
     fi
 
     api_response=$(curl -s -X PUT "$api_url$etag" -I)
+    if [[ -z "$api_response" ]]; then
+        printf "Error while contacting the service, exiting\n"
+        exit
+    fi
     s3_upload_url=$(echo "$api_response" | grep -Fi Location | sed 's/Location: //g' | sed -e 's/[[:space:]]*$//' );
+    if [[ -z "$s3_upload_url" ]]; then
+        printf "Error while contacting the service, malformed response\n"
+        exit
+    fi
+    set -e
+
     curl -s --upload-file "/tmp/$etag.zip" "$s3_upload_url";
     printf "Use this etag to download the file: \n$etag\n"
     printf "Example: \nusbstick download -e $etag -d /tmp \n"
@@ -42,7 +67,7 @@ function sub_download() {
 
     cd "$dir"
     curl -L "$api_url$etag" --output "./$etag.zip"
-    unzip -qq "$etag.zip" -d "$etag"
+    sudo unzip -X -qq "$etag.zip" -d "$etag"
     printf "\nYour files have been downloaded in $dir/$etag \n"
 }
 

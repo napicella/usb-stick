@@ -86,7 +86,7 @@ aws s3api put-object-acl --bucket "$bucket" --key usb-stick.zip --acl public-rea
 cat >../release/installer.sh <<EOL
 #!/bin/bash
 wget "http://${bucket}.s3.amazonaws.com/usb-stick.zip" -O /tmp/usb-stick.zip;
-sudo unzip -o /tmp/usb-stick.zip -d /usr/bin/;
+sudo unzip -o /tmp/usb-stick.zip -d /usr/local/bin/;
 rm /tmp/usb-stick.zip
 EOL
 chmod +x ../release/installer.sh
