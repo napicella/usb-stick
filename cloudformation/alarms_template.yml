@@ -69,7 +69,9 @@ Resources:
       MetricName: BucketSizeBytes
       Dimensions:
       - Name: BucketName
-        Value: !Sub "${S3DataBucketName}"
+        Value:
+          Fn::ImportValue:
+            !Sub "${S3DataBucketName}"
       Statistic: Average
       Period: 86400
       EvaluationPeriods: 1
@@ -89,7 +91,7 @@ Resources:
   DdosBlocker:
     Type: 'AWS::Serverless::Application'
     Properties:
-      Location: ../kill-switch/template.yaml
+      Location: ../kill-switch-lambda/template.yaml
       Parameters:
         TooManyRequestAlarmTopic: !Sub "${AlarmNotificationTopic}"
         ApiGatewayId:
