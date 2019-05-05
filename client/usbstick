@@ -45,7 +45,7 @@ function sub_store() {
         exit
     fi
 
-    api_response=$(curl -s -X PUT "$api_url$etag" -I)
+    api_response=$(curl -s -X PUT "${api_url}bundle/${etag}" -I)
     if [[ -z "$api_response" ]]; then
         printf "Error while contacting the service, exiting\n"
         exit
@@ -70,7 +70,7 @@ function sub_download() {
     source "$my_dir/download_args.sh"
 
     cd "$dir"
-    curl -L "$api_url$etag" --output "./$etag.zip"
+    curl -L "${api_url}bundle/${etag}" --output "./$etag.zip"
     unzip -X -qq "$etag.zip" -d "$etag"
     printf "\nYour files have been downloaded in $dir/$etag \n"
 }

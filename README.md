@@ -23,7 +23,7 @@ after it was download or delete it after one hour from the date of the upload.
 
 #### Install the client
 The client depends on a couple of tools normally preinstalled on linux distributions like __curl__ and __zip__.  
-If you are on Windows, the client won't work.  
+If you are on Windows, you need Windows Linux Subsystem.
 
 ```bash
 curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/release/installer.sh | bash

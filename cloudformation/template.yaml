@@ -35,10 +35,28 @@ Resources:
         AnyRequest:
           Type: Api
           Properties:
-            Path: /*
+            Path: /bundle/{proxy+}
             Method: ANY
             RestApiId:
               Ref: UsbStickApiUrl
+
+  AuthLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: ../auth/auth-lambda
+      Environment:
+          Variables:
+            USER_POOL_ID: !GetAtt AuthStack.Outputs.UserPoolId
+            USER_POOL_CLIENT_ID: !GetAtt AuthStack.Outputs.UserPoolClientId
+      Events:
+        AnyRequest:
+          Type: Api
+          Properties:
+            Path: /auth/{proxy+}
+            Method: ANY
+            RestApiId: !Ref UsbStickApiUrl
 
   UsbStickApiUrl:
       Type: AWS::Serverless::Api
@@ -55,7 +73,17 @@ Resources:
             ## This is the value assigned as ApiName by SAM
             title: !Sub 'UsbStickApiUrl-${StageName}'
           paths:
-            "/{proxy+}":
+            "/auth/{proxy+}":
+              x-amazon-apigateway-any-method:
+                produces:
+                  - application/json
+                x-amazon-apigateway-integration:
+                  uri:
+                    !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AuthLambda.Arn}/invocations"
+                  passthroughBehavior: when_no_match
+                  httpMethod: POST
+                  type: aws_proxy
+            "/bundle/{proxy+}":
               x-amazon-apigateway-any-method:
                 produces:
                   - application/json
@@ -65,6 +93,13 @@ Resources:
                   passthroughBehavior: when_no_match
                   httpMethod: POST
                   type: aws_proxy
+
+  AuthStack:
+    Type: 'AWS::Serverless::Application'
+    Properties:
+      Location: ../auth/cloudformation/template.yml
+      Parameters:
+        AuthName: UsbStickAuth
 
 Outputs:
   UsbStickApiUrl:
