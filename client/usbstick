@@ -71,7 +71,7 @@ function sub_download() {
 
     cd "$dir"
     curl -L "$api_url$etag" --output "./$etag.zip"
-    sudo unzip -X -qq "$etag.zip" -d "$etag"
+    unzip -X -qq "$etag.zip" -d "$etag"
     printf "\nYour files have been downloaded in $dir/$etag \n"
 }
 
