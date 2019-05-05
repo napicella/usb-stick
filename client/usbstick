@@ -55,9 +55,13 @@ function sub_store() {
         printf "Error while contacting the service, malformed response\n"
         exit
     fi
-    set -e
 
     curl -s --upload-file "/tmp/$etag.zip" "$s3_upload_url";
+    if (( $? )); then
+        echo "Failure while uploading to usbstick"
+        exit
+    fi
+    set -e
     printf "Use this etag to download the file: \n$etag\n"
     printf "Example: \nusbstick download -e $etag -d /tmp \n"
 }

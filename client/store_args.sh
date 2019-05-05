@@ -13,7 +13,7 @@ function help(){
 }
 
 # Execute getopt
-ARGS=$(getopt -o "hd:p:" -l "help,dir:,password:" -n "usb-stick" -- "$@");
+ARGS=$(getopt -o "hd:" -l "help,dir:" -n "usb-stick" -- "$@");
 
 #Bad arguments
 if [ $? -ne 0 ];
@@ -37,15 +37,6 @@ while true; do
                         shift;
                     fi
             ;;
-        -p|--password)
-            shift;
-                    if [ -n "$1" ];
-                    then
-                        password="$1";
-                        shift;
-                    fi
-            ;;
-
         --)
             shift;
             break;
@@ -60,6 +51,8 @@ then
     help;
 fi
 
+read -s -p "Enter Password (used to protect the files): " password
+echo
 if [ -z "$password" ]
 then
     echo "password is required";

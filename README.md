@@ -1,5 +1,5 @@
-# Usb stick
-Store file and directories in the cloud to transfer it to another machine.  
+# USB stick
+Store files and directories in the cloud to transfer it to another machine.  
 
 __Use cases__
 - Copy data between two different machines which are in two different not connected VPCs
@@ -32,7 +32,8 @@ curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/release/ins
 #### Usage
 Store `some-folder` folder
 ```bash
-usbstick store -d ./some-folder -p some-password-used-to-encrypt-the-zip
+usbstick store -d ./some-folder
+Enter Password (used to protect the files):
 ```
 This returns an etag. Something along the lines:
 ```bash
