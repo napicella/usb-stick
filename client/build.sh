@@ -11,5 +11,5 @@ fi
 mkdir ./build | true
 rm -rf ./build/*
 
-# cd src/github.com/usb-stick-client && dep ensure && cd -
+cd src/github.com/usb-stick-client && dep ensure && cd -
 go build -ldflags "-X github.com/usb-stick-client/model.ServiceUrl=$SERVICE_URL" -o ./build/usb github.com/usb-stick-client

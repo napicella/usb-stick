@@ -12,8 +12,6 @@ import (
 	"path/filepath"
 )
 
-
-
 func Cmd(usbService model.UsbService) (*cobra.Command, error) {
 	var cmd = &cobra.Command{
 		Use:   "upload",
@@ -33,7 +31,7 @@ func Cmd(usbService model.UsbService) (*cobra.Command, error) {
 				return e
 			}
 
-			log.Printf("Going to upload %s\n", dir)
+			log.Printf("going to upload %s\n", dir)
 
 			pass, e := interactive.PromptForPassword()
 			if e != nil {
@@ -43,6 +41,7 @@ func Cmd(usbService model.UsbService) (*cobra.Command, error) {
 			if e != nil {
 				return e
 			}
+			fmt.Println("download using the etag:")
 			fmt.Println(etag)
 			return nil
 		},
