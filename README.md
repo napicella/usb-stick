@@ -1,5 +1,21 @@
 # USB stick
-Store files and directories in the cloud to transfer it to another machine.  
+Store files and directories in the cloud to transfer it to another machine.   
+
+The scope of the project is what I call a Sunday afternoon project, which means:
+- few tests
+- speed over code quality
+- showcase technology, patterns, etc.
+- useful to some extend
+- whoever is interested should be able to build and deploy it with minimal effort
+- maybe a live demo 
+
+The project showcases:
+- AWS Lambda with NodeJS which generates S3 presigned URL
+- Cloudformation template to generate the usb service
+- Cloudformation template to generate alarms
+- a poor's man kill switch for API Gateway used for the demo
+- golang CLI using [cobra](https://github.com/spf13/cobra)
+- golang CLI dependencies vendored with [dep](https://github.com/golang/dep)
 
 __Use cases__
 - Copy data between two different machines which are in two different not connected VPCs
@@ -22,8 +38,7 @@ after it was download or delete it after one hour from the date of the upload.
 # Try the live demo
 
 #### Install the client
-The client depends on a couple of tools normally preinstalled on linux distributions like __curl__ and __zip__.  
-If you are on Windows, you need Windows Linux Subsystem.
+Note: if you are a windows user, you need to recompile the source
 
 ```bash
 curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash
@@ -32,29 +47,25 @@ curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_inst
 #### Usage
 Store `some-folder` folder
 ```bash
-usbstick store -d ./some-folder
-Enter Password (used to protect the files):
+usb upload ./some-folder
+Enter Password:
 ```
 This returns an etag. Something along the lines:
 ```bash
-$ usbstick store -d ./some-folder -p 1234
-  adding: some-folder (deflated 81%)
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+$ usb upload ./some-folder
 Use this etag to download the file: 
 
-Em5lXDayaslXdrVwjKokETzU-eu26tCr
+2c8saf06-a064-12e9-a05b-d481d7a17d24
 ```
 
 Download `some folder` in tmp
 ```bash
-usbstick download -e Em5lXDayaslXdrVwjKokETzU-eu26tCr -d /tmp
+usb download -e 2c8saf06-a064-12e9-a05b-d481d7a17d24 -d /tmp
 ```
 
 Storing and downloading individual files works exactly the same way.
 
-# Deploy the stack and the client to your account
+# Deploy the stack to your account
 
 The guide describes how to deploy the UsbStick Service and Client in your AWS account.
 __Prerequisites__  
@@ -70,8 +81,8 @@ The cloudformation template in the source creates the service:
 our cloud Usb Stick.
 
 __Client__  
-The client is a bash script which sends request to the Api Gateway.
-The url of the Api Gateway is going to be injected in the script and the script is going to be uploaded to an S3 bucket. 
+The client is a golang cli which sends request to the Api Gateway.
+The url of the Api Gateway is going to be injected in the goland code.
 During upload the client performs:
 - creates a random etag which is going to be used as name of the object in S3
 - zip the content to upload using a password, send http requests to the API Gateway and uses the presigned url to upload the zip.
@@ -93,23 +104,14 @@ cd usb-stick-lambda-service && npm install
 Set some variables for convenience
 
 ```bash
-client_b=first.bucket.here
 service_b=second.bucket.here
 data_b=third.bucket.here
 ```
 
-## Deploy the service and the client
+## Deploy the service
 
 ```bash
-./deploy.sh -c "$client_b" -s "$service_b" -d "$data_b" -f
-```
-
-## Install the client
-
-```bash
-wget "http://$client_b.s3.amazonaws.com/usb-stick.zip" -O /tmp/usb-stick.zip; \
-      sudo unzip /tmp/usb-stick.zip -d /usr/bin/; \
-      rm /tmp/usb-stick.zip
+./deploy.sh -s "$service_b" -d "$data_b" -f
 ```
 
 You can install the clients on how many machines as you want.   

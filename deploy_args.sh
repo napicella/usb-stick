@@ -4,12 +4,11 @@
 function help(){
     echo "usb-stick-deploy - Deploy the usb-stick application";
     echo "Usage example:";
-    echo "usb-stick-deploy (-f|--force) boolean (-s|--serviceBucket) string (-c|--clientBucket) string (-d|--dataBucket) string [(-h|--help)]";
+    echo "usb-stick-deploy (-f|--force) boolean (-s|--serviceBucket) string (-d|--dataBucket) string [(-h|--help)]";
     echo "Options:";
     echo "-h or --help: Displays this information.";
     echo "-f or --force boolean: force reuse existing buckets. Required.";
     echo "-s or --serviceBucket string: the bucket which will host the service code. Required.";
-    echo "-c or --clientBucket string: the bucket which will host the client code. Required.";
     echo "-d or --dataBucket string: the bucket which will host the data. Required.";
     exit 1;
 }
@@ -18,7 +17,7 @@ function help(){
 force=false
 
 # Execute getopt
-ARGS=$(getopt -o "hfs:d:c:" -l "help,force,service-bucket:,data-bucket:,client-bucket" -n "usb-stick-deploy" -- "$@");
+ARGS=$(getopt -o "hfs:d:" -l "help,force,service-bucket:,data-bucket" -n "usb-stick-deploy" -- "$@");
 
 #Bad arguments
 if [ $? -ne 0 ];
@@ -46,14 +45,6 @@ while true; do
                         shift;
                     fi
             ;;
-        -c|--client-bucket)
-            shift;
-                    if [ -n "$1" ];
-                    then
-                        clientBucket="$1";
-                        shift;
-                    fi
-            ;;
         -d|--data-bucket)
             shift;
                     if [ -n "$1" ];
@@ -74,12 +65,6 @@ done
 if [ -z "$serviceBucket" ]
 then
     echo "service-bucket is required";
-    help;
-fi
-
-if [ -z "$clientBucket" ]
-then
-    echo "client-bucket is required";
     help;
 fi
 

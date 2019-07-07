@@ -61,9 +61,9 @@ if [ "$force" = true ]; then
     fail_if_exists=false
 fi
 
-create_bucket "$clientBucket" "$fail_if_exists"
 create_bucket "$serviceBucket" "$fail_if_exists"
 
 deploy_service_cfn_stack
 printf "Url of the service: \n$apigwurl \n"
+printf "Building the client"
 client/build.sh "$apigwurl"
