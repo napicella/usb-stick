@@ -8,5 +8,5 @@ then
 	exit -1
 fi
 
-wget "https://github.com/napicella/usb-stick/blob/master/release/${OS}/usb?raw=true" -O /usr/local/bin/usb
+wget -v "https://github.com/napicella/usb-stick/blob/master/release/${OS}/usb?raw=true" -O /usr/local/bin/usb
 chmod +x /usr/local/bin/usb
