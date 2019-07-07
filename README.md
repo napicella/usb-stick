@@ -26,7 +26,7 @@ The client depends on a couple of tools normally preinstalled on linux distribut
 If you are on Windows, you need Windows Linux Subsystem.
 
 ```bash
-curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/release/installer.sh | bash
+curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | bash
 ```
 
 #### Usage
