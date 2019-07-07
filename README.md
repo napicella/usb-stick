@@ -38,11 +38,20 @@ after it was download or delete it after one hour from the date of the upload.
 # Try the live demo
 
 #### Install the client
-Note: if you are a windows user, you need to recompile the source
+__LINUX__
 
 ```bash
-curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash
+curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash -s linux
 ```
+
+__MAC_OS__
+```bash
+curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash -s darwin
+```
+
+__WINDOWS__
+Download the binary under release/windows and add it to the PATH
+
 
 #### Usage
 Store `some-folder` folder
