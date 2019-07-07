@@ -77,6 +77,8 @@ echo "$(pwd)"
 echo "$bucket"
 echo "$url"
 
+
+
 sed -i -e "s~API_URL~$url~" usbstick
 zip -r ../release/usb-stick.zip *
 sed -i -e "s~$url~API_URL~" usbstick

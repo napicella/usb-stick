@@ -48,7 +48,7 @@ function deploy_service_cfn_stack() {
     sam deploy --debug --template-file /tmp/out.yaml \
         --stack-name "$stack_name" \
         --parameter-overrides BucketName="$dataBucket" \
-        --capabilities CAPABILITY_IAM \
+        --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
         --no-fail-on-empty-changeset
 
     aws cloudformation wait "$wait_condition" --stack-name "$stack_name"
@@ -66,4 +66,4 @@ create_bucket "$serviceBucket" "$fail_if_exists"
 
 deploy_service_cfn_stack
 printf "Url of the service: \n$apigwurl \n"
-"$my_dir"/build_client.sh -b "$clientBucket" -u "$apigwurl"
+client/build.sh "$apigwurl"

@@ -1,4 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
 Description: Cognito Stack
 Parameters:
   AuthName:
@@ -16,6 +18,8 @@ Resources:
       AutoVerifiedAttributes:
         - email
       MfaConfiguration: "ON"
+      LambdaConfig:
+        CustomMessage: !GetAtt LambdaCustomConfirmationMessage.Arn
       Schema:
         - Name: name
           AttributeDataType: String
@@ -33,6 +37,27 @@ Resources:
       ClientName: !Sub ${AuthName}-client
       GenerateSecret: false
       UserPoolId: !Ref UserPool
+
+  LambdaCustomConfirmationMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      InlineCode: |
+        exports.handler = (event, context, callback) => {
+               console.log("Invoked ", event.triggerSource);
+                // Identify why was this function invoked
+                if(event.triggerSource === "CustomMessage_SignUp") {
+                    // Ensure that your message contains event.request.codeParameter. This is the placeholder for code that will be sent
+                    event.response.emailSubject = "Welcome to the service";
+                    event.response.emailMessage =
+                    `<a href="https://[your domain]/confirmUser?client_id=[your clientId]&user_name=" + event.request.userAttributes.sub + "&confirmation_code=" + event.request.codeParameter + ">Click here to verify your account</a>`;
+                }
+
+            // Return to Amazon Cognito
+            callback(null, event);
+        };
+
 
 
 Outputs:
