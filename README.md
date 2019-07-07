@@ -16,6 +16,7 @@ The project showcases:
 - a poor's man kill switch for API Gateway used for the demo
 - golang CLI using [cobra](https://github.com/spf13/cobra)
 - golang CLI dependencies vendored with [dep](https://github.com/golang/dep)
+- auth with Cognito (I did not manage to complete it, so calls are unauthenticated)
 
 __Use cases__
 - Copy data between two different machines which are in two different not connected VPCs
