@@ -49,8 +49,10 @@ __MAC_OS__
 curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash -s darwin
 ```
 
-__WINDOWS__
-Download the binary under release/windows and add it to the PATH
+__WINDOWS__  
+1. download the binary release/windows/usb.exe
+2. set the executable flag
+3. add it to the PATH
 
 
 #### Usage
