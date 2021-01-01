@@ -36,47 +36,6 @@ machine.
 lifecycle policies on the data stored. On the other hand, with UsbStick we can enforce deletion of the data
 after it was download or delete it after one hour from the date of the upload.
 
-# Try the live demo
-
-#### Install the client
-__LINUX__
-
-```bash
-curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash -s linux
-```
-
-__MAC_OS__
-```bash
-curl -L https://raw.githubusercontent.com/napicella/usb-stick/master/client_installer.sh | sudo bash -s darwin
-```
-
-__WINDOWS__  
-1. download the binary release/windows/usb.exe
-2. set the executable flag
-3. add it to the PATH
-
-
-#### Usage
-Store `some-folder` folder
-```bash
-usb upload ./some-folder
-Enter Password:
-```
-This returns an etag. Something along the lines:
-```bash
-$ usb upload ./some-folder
-Use this etag to download the file: 
-
-2c8saf06-a064-12e9-a05b-d481d7a17d24
-```
-
-Download `some folder` in tmp
-```bash
-usb download -e 2c8saf06-a064-12e9-a05b-d481d7a17d24 -d /tmp
-```
-
-Storing and downloading individual files works exactly the same way.
-
 # Deploy the stack to your account
 
 The guide describes how to deploy the UsbStick Service and Client in your AWS account.
@@ -145,3 +104,24 @@ Then run:
 ```bash
 ./deploy_alarms.sh --codeBucket "${code_b}" --email "${email}"
 ```
+
+## CLI usage
+Store `some-folder` folder
+```bash
+usb upload ./some-folder
+Enter Password:
+```
+This returns an etag. Something along the lines:
+```bash
+$ usb upload ./some-folder
+Use this etag to download the file: 
+
+2c8saf06-a064-12e9-a05b-d481d7a17d24
+```
+
+Download `some folder` in tmp
+```bash
+usb download -e 2c8saf06-a064-12e9-a05b-d481d7a17d24 -d /tmp
+```
+
+Storing and downloading individual files works exactly the same way.
